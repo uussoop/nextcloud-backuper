@@ -13,7 +13,9 @@ class Compressor:
     def compress_directory(
         directory_path: str,
         output_path: str,
-        max_size: int = None
+        max_size: int = None,
+        compression_preset: int = 1,
+        use_multiprocessing: bool = True
     ) -> List[str]:
         """
         Compress a directory into multi-volume .7z files.
@@ -22,6 +24,9 @@ class Compressor:
             directory_path: Path to directory to compress
             output_path: Output directory for compressed files
             max_size: Maximum volume size in bytes (default from config)
+            compression_preset: LZMA2 compression level 0-9 (default: 1 for fast)
+                               0 = fastest, 1 = very fast, 5 = balanced, 7 = default, 9 = max
+            use_multiprocessing: Enable multi-core compression (default: True)
             
         Returns:
             List of paths to generated archive files
@@ -40,9 +45,23 @@ class Compressor:
         dir_name = os.path.basename(directory_path)
         archive_path = os.path.join(output_path, f"{dir_name}.7z")
         
-        # Create multi-volume 7z archive
-        with multivolumefile.open(archive_path, mode="wb", volume=max_size) as target:
-            with py7zr.SevenZipFile(target, mode='w') as archive:
+        # Create multi-volume 7z archive with proper parameters
+        # ext_digits=4 creates files like: name.7z.0001, name.7z.0002, etc.
+        # Lower preset = faster compression, use multiprocessing for speed
+        filters = [{"id": py7zr.FILTER_LZMA2, "preset": compression_preset}]
+        
+        with multivolumefile.open(
+            archive_path,
+            mode="wb",
+            volume=max_size,
+            ext_digits=4
+        ) as target:
+            with py7zr.SevenZipFile(
+                target,
+                mode='w',
+                filters=filters,
+                mp=use_multiprocessing
+            ) as archive:
                 archive.writeall(directory_path, arcname=dir_name)
         
         # Return sorted list of generated files

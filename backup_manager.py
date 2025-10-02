@@ -91,9 +91,13 @@ class BackupManager:
                 )
                 
                 try:
-                    # Compress directory
+                    # Compress directory with configured settings
                     archive_parts = self.compressor.compress_directory(
-                        directory, work_dir
+                        directory,
+                        work_dir,
+                        max_size=Config.MAX_VOLUME_SIZE,
+                        compression_preset=Config.COMPRESSION_PRESET,
+                        use_multiprocessing=Config.USE_MULTIPROCESSING
                     )
                     
                     # Log compression results with file sizes

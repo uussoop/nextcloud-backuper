@@ -21,6 +21,8 @@ class Config:
     FORBIDDEN_DIRS_FILE: str
     MAX_VOLUME_SIZE: int  # in bytes
     MAX_UPLOAD_WORKERS: int
+    COMPRESSION_PRESET: int  # 0-9, lower=faster
+    USE_MULTIPROCESSING: bool  # Enable multi-core compression
     
     # Schedule Configuration
     BACKUP_HOUR: int
@@ -46,6 +48,8 @@ class Config:
         cls.FORBIDDEN_DIRS_FILE = os.getenv("FORBIDDEN_DIRS_FILE", "forbidden")
         cls.MAX_VOLUME_SIZE = int(os.getenv("MAX_VOLUME_SIZE", str(1024 * 1024 * 1024)))  # 1GB default
         cls.MAX_UPLOAD_WORKERS = int(os.getenv("MAX_UPLOAD_WORKERS", "4"))
+        cls.COMPRESSION_PRESET = int(os.getenv("COMPRESSION_PRESET", "1"))  # 1 = very fast (recommended)
+        cls.USE_MULTIPROCESSING = os.getenv("USE_MULTIPROCESSING", "true").lower() == "true"
         
         # Schedule settings
         cls.BACKUP_HOUR = int(os.getenv("BACKUP_HOUR", "3"))
@@ -72,6 +76,9 @@ class Config:
         
         if cls.MAX_UPLOAD_WORKERS <= 0:
             raise ValueError("MAX_UPLOAD_WORKERS must be positive")
+        
+        if not (0 <= cls.COMPRESSION_PRESET <= 9):
+            raise ValueError("COMPRESSION_PRESET must be between 0 and 9")
         
         if not (0 <= cls.BACKUP_HOUR <= 23):
             raise ValueError("BACKUP_HOUR must be between 0 and 23")
