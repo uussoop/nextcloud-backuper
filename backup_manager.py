@@ -96,8 +96,11 @@ class BackupManager:
                         directory, work_dir
                     )
                     
+                    # Log compression results with file sizes
+                    total_size = sum(os.path.getsize(f) for f in archive_parts)
+                    size_str = self.compressor.format_size(total_size)
                     self.logger.send(
-                        f"✅ Compressed into {len(archive_parts)} part(s)"
+                        f"✅ Compressed into {len(archive_parts)} part(s) ({size_str} total)"
                     )
                     
                     # Upload parts

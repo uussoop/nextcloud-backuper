@@ -42,7 +42,8 @@ class Compressor:
         
         # Create multi-volume 7z archive
         with multivolumefile.open(archive_path, mode="wb", volume=max_size) as target:
-            py7zr.pack_7zarchive(target, directory_path, "w")
+            with py7zr.SevenZipFile(target, mode='w') as archive:
+                archive.writeall(directory_path, arcname=dir_name)
         
         # Return sorted list of generated files
         archive_files = [
@@ -50,6 +51,14 @@ class Compressor:
             for f in sorted(os.listdir(output_path))
             if f.startswith(dir_name)
         ]
+        
+        # Verify files were created
+        for file in archive_files:
+            if not os.path.exists(file):
+                raise FileNotFoundError(f"Expected archive file not found: {file}")
+            size = os.path.getsize(file)
+            if size == 0:
+                raise ValueError(f"Archive file is empty (0 bytes): {file}")
         
         return archive_files
     
