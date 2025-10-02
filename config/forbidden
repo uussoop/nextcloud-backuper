@@ -1,0 +1,7 @@
+# Add directories to exclude from backup (one per line)
+# Use absolute paths
+
+# Example:
+# /path/to/exclude/directory1
+# /path/to/exclude/directory2
+

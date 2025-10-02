@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  nextcloud-backuper:
+    build: .
+    container_name: nextcloud-backuper
+    restart: unless-stopped
+    
+    # Environment variables - configure these or use .env file
+    environment:
+      # Nextcloud Configuration (REQUIRED)
+      - NEXTCLOUD_URL=${NEXTCLOUD_URL}
+      - NEXTCLOUD_USERNAME=${NEXTCLOUD_USERNAME}
+      - NEXTCLOUD_PASSWORD=${NEXTCLOUD_PASSWORD}
+      - NEXTCLOUD_BACKUP_PATH=${NEXTCLOUD_BACKUP_PATH:-backup/mainserver}
+      
+      # Telegram Configuration (REQUIRED)
+      - TELEGRAM_TOKEN=${TELEGRAM_TOKEN}
+      - TELEGRAM_CHANNEL_ID=${TELEGRAM_CHANNEL_ID}
+      
+      # Backup Configuration
+      - BACKUP_BASE_DIR=/data
+      - FORBIDDEN_DIRS_FILE=/config/forbidden
+      - MAX_VOLUME_SIZE=${MAX_VOLUME_SIZE:-1073741824}
+      - MAX_UPLOAD_WORKERS=${MAX_UPLOAD_WORKERS:-4}
+      
+      # Schedule Configuration
+      - BACKUP_HOUR=${BACKUP_HOUR:-3}
+      - BACKUP_MINUTE=${BACKUP_MINUTE:-0}
+      - TIMEZONE=${TIMEZONE:-America/New_York}
+      - RUN_ON_STARTUP=${RUN_ON_STARTUP:-false}
+    
+    volumes:
+      # Mount the directory containing data to backup
+      - /path/to/your/data:/data:ro  # Read-only recommended for safety
+      
+      # Mount config directory for forbidden file
+      - ./config:/config:ro
+      
+      # Optional: Mount work directory for temporary files
+      - ./temp:/app/temp
+    
+    # Resource limits (adjust as needed)
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+    
+    # Timezone for container
+    environment:
+      - TZ=America/New_York
+
