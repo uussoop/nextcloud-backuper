@@ -44,10 +44,8 @@ def main():
         # Run immediately on startup if configured
         if Config.RUN_ON_STARTUP:
             logger.send("▶️ Running immediate backup on startup...")
-            scheduler.add_job(
-                backup_manager.run_backup,
-                next_run_time=datetime.datetime.now(timezone)
-            )
+            backup_manager.run_backup()
+            logger.send("✅ Initial backup completed. Scheduler will now take over.")
         
         # Start scheduler (blocking)
         scheduler.start()

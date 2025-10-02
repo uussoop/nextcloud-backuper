@@ -51,7 +51,7 @@ class Config:
         cls.BACKUP_HOUR = int(os.getenv("BACKUP_HOUR", "3"))
         cls.BACKUP_MINUTE = int(os.getenv("BACKUP_MINUTE", "0"))
         cls.TIMEZONE = os.getenv("TIMEZONE", "America/New_York")  # EDT/EST
-        cls.RUN_ON_STARTUP = os.getenv("RUN_ON_STARTUP", "false").lower() == "true"
+        cls.RUN_ON_STARTUP = os.getenv("RUN_ON_STARTUP", "true").lower() == "true"
     
     @staticmethod
     def _get_required_env(key: str) -> str:

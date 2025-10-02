@@ -28,7 +28,7 @@ services:
       - BACKUP_HOUR=${BACKUP_HOUR:-3}
       - BACKUP_MINUTE=${BACKUP_MINUTE:-0}
       - TIMEZONE=${TIMEZONE:-America/New_York}
-      - RUN_ON_STARTUP=${RUN_ON_STARTUP:-false}
+      - RUN_ON_STARTUP=${RUN_ON_STARTUP:-true}
     
     volumes:
       # Mount the directory containing data to backup
