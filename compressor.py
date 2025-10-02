@@ -50,7 +50,7 @@ class Compressor:
         # Lower preset = faster compression, use multiprocessing for speed
         filters = [{"id": py7zr.FILTER_LZMA2, "preset": compression_preset}]
         
-        with multivolumefile.open(
+        with multivolumefile.MultiVolume(
             archive_path,
             mode="wb",
             volume=max_size,
